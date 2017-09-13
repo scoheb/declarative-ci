@@ -26,7 +26,7 @@ pipeline {
             steps {
                 script {
                     echo "ostree!"
-		    sleep 10
+		    sleep 60
                 }
             }
         }
