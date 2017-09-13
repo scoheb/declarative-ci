@@ -7,7 +7,8 @@ pipeline {
 		checkout scm
             }
         }
-        stage("Two") {
+	parallel {
+        stage("rpmbuild") {
             when {
                 changeset "config/Dockerfiles/rpmbuild/**"
             }
@@ -15,9 +16,19 @@ pipeline {
                 script {
                     echo "rpmbuild!"
                 }
-
             }
         }
+        stage("ostree") {
+            when {
+                changeset "config/Dockerfiles/ostree/**"
+            }
+            steps {
+                script {
+                    echo "ostree!"
+                }
+            }
+        }
+	}
     }
 }
 
