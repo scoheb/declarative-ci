@@ -1,6 +1,7 @@
 
 def rpmbuildLabel = "stable"
 def ostreeLabel = "stable"
+
 pipeline {
     agent any
     stages {
@@ -30,7 +31,7 @@ pipeline {
                 script {
                     echo "ostree!"
 		    sleep 60
-		    def ostreeLabel = "ostree-latest"
+		    ostreeLabel = "ostree-latest"
                 }
               }
             }
