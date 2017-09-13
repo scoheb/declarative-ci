@@ -9,11 +9,11 @@ pipeline {
         }
         stage("Two") {
             when {
-                changeset "**/*.js"
+                changeset "config/Dockerfiles/rpmbuild/**"
             }
             steps {
                 script {
-                    echo "JS World"
+                    echo "rpmbuild!"
                 }
 
             }
