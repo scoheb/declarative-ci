@@ -7,6 +7,7 @@ pipeline {
 		checkout scm
             }
         }
+        stage("Container Builds") {
 	parallel {
         stage("rpmbuild") {
             when {
@@ -28,6 +29,7 @@ pipeline {
                 }
             }
         }
+	}
 	}
     }
 }
