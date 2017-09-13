@@ -1,3 +1,7 @@
+
+env.ghprbGhRepository = env.ghprbGhRepository ?: 'CentOS-PaaS-SIG/ci-pipeline'
+env.ghprbActualCommit = env.ghprbActualCommit ?: 'master'
+
 def rpmbuildLabel = "stable"
 def ostreeLabel = "stable"
 
@@ -23,7 +27,7 @@ pipeline {
                                 openshift.withProject("continuous-infra") {
                                     def result = openshift.startBuild("rpmbuild",
                                             "--commit",
-                                            "refs/pull/281/head",
+                                            env.ghprbActualCommit,
                                             "--follow",
                                             "--wait")
                                     def out = result.out.trim()
@@ -38,12 +42,13 @@ pipeline {
                                             returnStdout: true
                                     ).trim()
                                     echo "imageHash: " + imageHash
-                                    def commitID = "123456"
+
+                                    echo "Creating CI tag for continuous-infra/rpmbuild: rpmbuild:" + env.ghprbActualCommit
 
                                     openshift.tag("continuous-infra/rpmbuild@" + imageHash,
-                                            "continuous-infra/rpmbuild:" + commitID)
+                                            "continuous-infra/rpmbuild:" + env.ghprbActualCommit)
 
-                                    rpmbuildLabel = commitID
+                                    rpmbuildLabel = env.ghprbActualCommit
                                 }
                             }
                         }
