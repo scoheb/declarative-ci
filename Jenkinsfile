@@ -1,37 +1,49 @@
+
+def rpmbuildLabel = "stable"
+def ostreeLabel = "stable"
 pipeline {
     agent any
     stages {
-        stage("One") {
+        stage("Checkout") {
             steps {
-                echo "Hello"
 		checkout scm
             }
         }
         stage("Container Builds") {
-	parallel {
-        stage("rpmbuild") {
-            when {
+	  parallel {
+            stage("rpmbuild") {
+              when {
                 changeset "config/Dockerfiles/rpmbuild/**"
-            }
-            steps {
+              }
+              steps {
                 script {
                     echo "rpmbuild!"
+		    rpmbuildLabel = "rpmbuild-latest"
                 }
+              }
             }
-        }
-        stage("ostree") {
-            when {
+            stage("ostree") {
+              when {
                 changeset "config/Dockerfiles/ostree/**"
-            }
-            steps {
+              }
+              steps {
                 script {
                     echo "ostree!"
 		    sleep 60
+		    def ostreeLabel = "ostree-latest"
                 }
+              }
+            }
+	  }
+	}
+        stage("Run Stage") {
+            steps {
+                script {
+                    echo rpmbuildLabel
+		    echo ostreeLabel
+		}
             }
         }
-	}
-	}
     }
 }
 
