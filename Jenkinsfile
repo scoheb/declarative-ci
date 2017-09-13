@@ -11,7 +11,7 @@ pipeline {
         }
         stage("Container Builds") {
             parallel {
-                stage("rpmbuild") {
+                stage("rpmbuild container") {
                     when {
                         changeset "config/Dockerfiles/rpmbuild/**"
                     }
@@ -19,7 +19,11 @@ pipeline {
                         script {
                             openshift.withCluster() {
                                 openshift.withProject("continuous-infra") {
-                                    def result = openshift.startBuild("rpmbuild", "--commit", "refs/pull/281/head", "--wait")
+                                    def result = openshift.startBuild("rpmbuild",
+                                            "--commit",
+                                            "refs/pull/281/head",
+                                            "--follow",
+                                            "--wait")
                                     def out = result.out.trim()
                                     echo "Operation output: " + out
 
@@ -34,7 +38,9 @@ pipeline {
                                     echo "imageHash: " + imageHash
                                     def commitID = "123456"
 
-                                    openshift.tag("continuous-infra/rpmbuild@" + imageHash, "continuous-infra/rpmbuild:" + commitID)
+                                    openshift.tag("continuous-infra/rpmbuild@" + imageHash,
+                                            "continuous-infra/rpmbuild:" + commitID)
+
                                     rpmbuildLabel = commitID
                                 }
                             }
@@ -54,11 +60,26 @@ pipeline {
                 }
             }
         }
-        stage("Run Stage") {
+        stage("Run Stage Job") {
             steps {
                 script {
                     echo rpmbuildLabel
                     echo ostreeLabel
+                    def build = build job: 'ci-stage-pipeline-f26',
+                            parameters: [
+                                    string(name: 'CI_MESSAGE', value: CANNED_CI_MESSAGE),
+                                    string(name: 'ghprbActualCommit', value: "${params.ghprbActualCommit}"),
+                                    string(name: 'ghprbGhRepository', value: "${params.ghprbGhRepository}"),
+                                    string(name: 'sha1', value: "${params.sha1}"),
+                                    string(name: 'ghprbPullId', value: "${params.ghprbPullId}"),
+                                    string(name: 'RPMBUILD_TAG', value: rpmbuildLabel)]
+                    wait: true
+
+                    if (build.result == 'SUCCESS') {
+                        echo "yay!"
+                    } else {
+                        error "build failed!"
+                    }
                 }
             }
         }
