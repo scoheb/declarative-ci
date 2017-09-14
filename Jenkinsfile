@@ -27,8 +27,8 @@ pipeline {
                             openshift.withCluster() {
                                 openshift.withProject(openshiftProject) {
                                     def result = openshift.startBuild("rpmbuild",
-                                            "--commit",
-                                            env.ghprbActualCommit,
+                                            //"--commit",
+                                            //env.ghprbActualCommit,
                                             "--wait")
                                     def out = result.out.trim()
                                     echo "Operation output: " + out
