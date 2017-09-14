@@ -2,7 +2,7 @@
  * CI Stage Pipeline Trigger
  *
  * This is a declarative pipeline for the CI stage pipeline
- * that includes to building of containers based on PRs
+ * that includes the building of images based on PRs
  *
  */
 
@@ -28,7 +28,7 @@ pipeline {
                 checkout scm
             }
         }
-        stage("Container Builds") {
+        stage("Image Builds") {
             // Parallel the execution of building CI images
             parallel {
                 stage("rpmbuild image build") {
@@ -92,7 +92,7 @@ pipeline {
         stage("Run Stage Job") {
             steps {
                 script {
-                    // Use tags derived from above container builds
+                    // Use tags derived from above image builds
                     //
                     echo "rpmbuild tag: " + rpmbuildLabel
                     echo "ostree   tag: " + ostreeLabel
