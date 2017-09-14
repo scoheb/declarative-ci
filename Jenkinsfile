@@ -4,6 +4,8 @@ env.ghprbActualCommit = env.ghprbActualCommit ?: 'master'
 def rpmbuildLabel = "stable"
 def ostreeLabel   = "stable"
 
+def openshiftProject = "continuous-infra-devel"
+
 def CANNED_CI_MESSAGE = '{"commit":{"username":"zdohnal","stats":{"files":{"README.patches":{"deletions":0,"additions":30,"lines":30},"sources":{"deletions":1,"additions":1,"lines":2},"vim.spec":{"deletions":7,"additions":19,"lines":26},".gitignore":{"deletions":0,"additions":1,"lines":1},"vim-8.0-rhbz1365258.patch":{"deletions":0,"additions":12,"lines":12}},"total":{"deletions":8,"files":5,"additions":63,"lines":71}},"name":"Zdenek Dohnal","rev":"3ff427e02625f810a2cedb754342be44d6161b39","namespace":"rpms","agent":"zdohnal","summary":"Merge branch \'f25\' into f26","repo":"vim","branch":"f26","seen":false,"path":"/srv/git/repositories/rpms/vim.git","message":"Merge branch \'f25\' into f26\\n","email":"zdohnal@redhat.com"},"topic":"org.fedoraproject.prod.git.receive"}'
 
 pipeline {
@@ -23,7 +25,7 @@ pipeline {
                     steps {
                         script {
                             openshift.withCluster() {
-                                openshift.withProject("continuous-infra") {
+                                openshift.withProject(openshiftProject) {
                                     def result = openshift.startBuild("rpmbuild",
                                             "--commit",
                                             env.ghprbActualCommit,
@@ -41,10 +43,10 @@ pipeline {
                                     ).trim()
                                     echo "imageHash: " + imageHash
 
-                                    echo "Creating CI tag for continuous-infra/rpmbuild: rpmbuild:" + env.ghprbActualCommit
+                                    echo "Creating CI tag for " + openshiftProject +"/rpmbuild: rpmbuild:" + env.ghprbActualCommit
 
-                                    openshift.tag("continuous-infra/rpmbuild@" + imageHash,
-                                            "continuous-infra/rpmbuild:" + env.ghprbActualCommit)
+                                    openshift.tag(openshiftProject + "/rpmbuild@" + imageHash,
+                                            openshiftProject + "/rpmbuild:" + env.ghprbActualCommit)
 
                                     rpmbuildLabel = env.ghprbActualCommit
                                 }
