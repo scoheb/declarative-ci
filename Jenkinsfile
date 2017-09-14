@@ -28,7 +28,6 @@ pipeline {
                                     def result = openshift.startBuild("rpmbuild",
                                             "--commit",
                                             env.ghprbActualCommit,
-                                            "--follow",
                                             "--wait")
                                     def out = result.out.trim()
                                     echo "Operation output: " + out
