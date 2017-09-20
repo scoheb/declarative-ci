@@ -36,7 +36,6 @@ pipeline {
     stages {
         stage("Checkout") {
             steps {
-	        echo "${env.STAGE_NAME}"
                 checkout scm
 		echo getChangeString()
             }
@@ -145,6 +144,11 @@ def getChangeString() {
             def entry = entries[j]
             truncated_msg = entry.msg.take(MAX_MSG_LEN)
             changeString += " - ${truncated_msg} [${entry.author}]\n"
+	    def files = new ArrayList(entry.affectedFiles)
+            for (int k = 0; k < files.size(); k++) {
+              def file = files[k]
+              changeString += "  ${file.editType.name} ${file.path}"
+            }
         }
     }
 
