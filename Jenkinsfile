@@ -38,6 +38,7 @@ pipeline {
             steps {
 	        echo "${env.STAGE_NAME}"
                 checkout scm
+		echo currentBuild.changeSet
             }
         }
         stage("Image Builds") {
