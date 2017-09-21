@@ -38,6 +38,8 @@ pipeline {
                     echo "PR number is: ${env.CHANGE_ID}"
                     echo getChangeString()
                 }
+                sh 'cat config/Dockerfiles/rpmbuild/Dockerfile'
+                sh 'cat config/Dockerfiles/ostree/Dockerfile'
             }
         }
         stage("rpmbuild image build") {
