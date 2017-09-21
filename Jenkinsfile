@@ -34,6 +34,15 @@ pipeline {
       }
     }
     stages {
+        stage("Re-Checkout") {
+            checkout([
+                    $class: 'GitSCM',
+                    branches: scm.branches,
+                    doGenerateSubmoduleConfigurations: scm.doGenerateSubmoduleConfigurations,
+                    extensions: scm.extensions,
+                    userRemoteConfigs: scm.userRemoteConfigs
+            ])
+        }
         stage("Get Changelog") {
             steps {
                 node('master') {
