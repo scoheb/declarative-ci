@@ -167,7 +167,7 @@ def getChangeString() {
 	    def files = new ArrayList(entry.affectedFiles)
             for (int k = 0; k < files.size(); k++) {
               def file = files[k]
-              changeString += " _ (${file.editType.name})  ${file.path}\n"
+              changeString += "    | (${file.editType.name})  ${file.path}\n"
             }
         }
     }
