@@ -40,7 +40,7 @@ pipeline {
                         $class                           : 'GitSCM',
                         branches                         : scm.branches,
                         doGenerateSubmoduleConfigurations: scm.doGenerateSubmoduleConfigurations,
-                        extensions                       : scm.extensions + [[$class: 'ChangelogToBranch', options: [compareRemote: 'origin', compareTarget: 'master']],
+                        extensions                       : scm.extensions + [[$class: 'ChangelogToBranch', options: [compareRemote: 'origin', compareTarget: 'master']]],
                         userRemoteConfigs                : scm.userRemoteConfigs
                 ])
             }
