@@ -44,19 +44,16 @@ pipeline {
                 echo getChangeString()
             }
         }
-        stage("Image Builds") {
-            // Parallel the execution of building CI images
-            parallel {
-                stage("rpmbuild image build") {
-                    when {
-                        // Only build if we have related files in changeset
-                        changeset "config/Dockerfiles/rpmbuild/**"
-                    }
-                    steps {
-                        script {
-                            echo "rpmbuild TODO"
-                            rpmbuildLabel = "rpmbuild-latest"
-                        }
+        stage("rpmbuild image build") {
+            when {
+                // Only build if we have related files in changeset
+                changeset "config/Dockerfiles/rpmbuild/**"
+            }
+            steps {
+                script {
+                    echo "rpmbuild TODO"
+                    rpmbuildLabel = "rpmbuild-latest"
+                }
 //                        script {
 //                            // - build in Openshift
 //                            // - startBuild with a commit
@@ -94,18 +91,16 @@ pipeline {
 //                                }
 //                            }
 //                        }
-                    }
-                }
-                stage("ostree image build") {
-                    when {
-                        changeset "config/Dockerfiles/ostree/**"
-                    }
-                    steps {
-                        script {
-                            echo "ostree TODO"
-                            ostreeLabel = "ostree-latest"
-                        }
-                    }
+            }
+        }
+        stage("ostree image build") {
+            when {
+                changeset "config/Dockerfiles/ostree/**"
+            }
+            steps {
+                script {
+                    echo "ostree TODO"
+                    ostreeLabel = "ostree-latest"
                 }
             }
         }
