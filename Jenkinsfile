@@ -151,7 +151,7 @@ def getChangeString() {
 	    def files = new ArrayList(entry.affectedFiles)
             for (int k = 0; k < files.size(); k++) {
               def file = files[k]
-              changeString += " x ${file.path}"
+              changeString += " x ${file.path}\n"
             }
         }
     }
