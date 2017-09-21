@@ -38,9 +38,8 @@ pipeline {
         stage("Get Changelog") {
             steps {
                 node('master') {
-                    echo "${env.CHANGE_ID}"
+                    echo "PR number is: ${env.CHANGE_ID}"
                 }
-                sh 'env'
                 echo getChangeString()
             }
         }
@@ -51,7 +50,7 @@ pipeline {
             }
             steps {
                 script {
-                    echo "rpmbuild TODO"
+                    echo "rpmbuild will build!"
                     rpmbuildLabel = "rpmbuild-latest"
                 }
 //                        script {
@@ -99,7 +98,7 @@ pipeline {
             }
             steps {
                 script {
-                    echo "ostree TODO"
+                    echo "ostree will build!"
                     ostreeLabel = "ostree-latest"
                 }
             }
