@@ -37,6 +37,9 @@ pipeline {
     stages {
         stage("Get Changelog") {
             steps {
+                node('master') {
+                    echo "${env.CHANGE_ID}"
+                }
                 sh 'env'
                 echo getChangeString()
             }
