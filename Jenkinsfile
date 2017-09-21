@@ -50,8 +50,8 @@ pipeline {
                 node('master') {
                     echo "PR number is: ${env.ghprbPullId}"
                     //echo "PR number is: ${env.CHANGE_ID}"
-                    
-                    String changeLogStr = getChangeString()
+
+                    def changeLogStr = getChangeString()
                     echo changeLogStr
                     writeFile file: 'changelog.txt', text: changeLogStr
                     archiveArtifacts allowEmptyArchive: true, artifacts: 'changelog.txt'
