@@ -36,13 +36,13 @@ pipeline {
     stages {
         stage("Re-Checkout") {
             steps {
-                checkout([
-                        $class                           : 'GitSCM',
-                        branches                         : scm.branches,
-                        doGenerateSubmoduleConfigurations: scm.doGenerateSubmoduleConfigurations,
-                        extensions                       : scm.extensions + [[$class: 'ChangelogToBranch', options: [compareRemote: 'origin', compareTarget: 'master']]],
-                        userRemoteConfigs                : [[refspec: '+refs/heads/*:refs/remotes/origin/* +refs/pull/*:refs/remotes/origin/pr/*', url: 'https://github.com/scoheb/declarative-ci']]
-                ])
+//                checkout([
+//                        $class                           : 'GitSCM',
+//                        branches                         : scm.branches,
+//                        doGenerateSubmoduleConfigurations: scm.doGenerateSubmoduleConfigurations,
+//                        extensions                       : scm.extensions + [[$class: 'ChangelogToBranch', options: [compareRemote: 'origin', compareTarget: 'master']]],
+//                        userRemoteConfigs                : [[refspec: '+refs/heads/*:refs/remotes/origin/* +refs/pull/*:refs/remotes/origin/pr/*', url: 'https://github.com/scoheb/declarative-ci']]
+//                ])
             }
         }
         stage("Get Changelog") {
