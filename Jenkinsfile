@@ -41,7 +41,7 @@ pipeline {
                         branches                         : scm.branches,
                         doGenerateSubmoduleConfigurations: scm.doGenerateSubmoduleConfigurations,
                         extensions                       : scm.extensions + [[$class: 'ChangelogToBranch', options: [compareRemote: 'origin', compareTarget: 'master']]],
-                        userRemoteConfigs                : scm.userRemoteConfigs
+                        userRemoteConfigs                : [[refspec: '+refs/heads/*:refs/remotes/origin/* +refs/pull/*:refs/remotes/origin/pr/*', url: 'https://github.com/scoheb/declarative-ci']]
                 ])
             }
         }
