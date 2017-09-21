@@ -51,11 +51,10 @@ pipeline {
                     script {
                         echo "PR number is: ${env.ghprbPullId}"
                         //echo "PR number is: ${env.CHANGE_ID}"
-
-                        changeLogStr = getChangeString()
-                        echo changeLogStr
+                        env.changeLogStr = getChangeString()
+                        echo env.changeLogStr
                     }
-                    writeFile file: 'changelog.txt', text: changeLogStr
+                    writeFile file: 'changelog.txt', text: env.changeLogStr
                     archiveArtifacts allowEmptyArchive: true, artifacts: 'changelog.txt'
                 }
                 sh 'cat config/Dockerfiles/rpmbuild/Dockerfile'
