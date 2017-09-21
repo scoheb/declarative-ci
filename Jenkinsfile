@@ -18,6 +18,8 @@ def ostreeLabel   = "stable"
 // Openshift project
 def openshiftProject = "continuous-infra-devel"
 
+def CANNED_CI_MESSAGE = ""
+
 pipeline {
     agent {
       kubernetes {
