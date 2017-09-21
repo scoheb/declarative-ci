@@ -9,6 +9,7 @@
 // Defaults for SCM operations
 env.ghprbGhRepository = env.ghprbGhRepository ?: 'CentOS-PaaS-SIG/ci-pipeline'
 env.ghprbActualCommit = env.ghprbActualCommit ?: 'master'
+env.sha1 = env.sha1 ?: 'master'
 
 // Defaults for tagging of images
 def rpmbuildLabel = "stable"
@@ -37,7 +38,7 @@ pipeline {
         stage("Checkout") {
             steps {
                 checkout scm
-		echo getChangeString()
+                echo getChangeString()
             }
         }
         stage("Image Builds") {
@@ -157,7 +158,7 @@ def getChangeString() {
     }
 
     if (!changeString) {
-        changeString = " - No new changes"
+        changeString = " - No new changes\n"
     }
     return changeString
 }
