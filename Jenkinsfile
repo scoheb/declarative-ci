@@ -48,11 +48,13 @@ pipeline {
         stage("Get Changelog") {
             steps {
                 node('master') {
-                    echo "PR number is: ${env.ghprbPullId}"
-                    //echo "PR number is: ${env.CHANGE_ID}"
+                    script {
+                        echo "PR number is: ${env.ghprbPullId}"
+                        //echo "PR number is: ${env.CHANGE_ID}"
 
-                    def changeLogStr = getChangeString()
-                    echo changeLogStr
+                        changeLogStr = getChangeString()
+                        echo changeLogStr
+                    }
                     writeFile file: 'changelog.txt', text: changeLogStr
                     archiveArtifacts allowEmptyArchive: true, artifacts: 'changelog.txt'
                 }
