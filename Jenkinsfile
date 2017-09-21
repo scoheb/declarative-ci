@@ -37,6 +37,7 @@ pipeline {
     stages {
         stage("Get Changelog") {
             steps {
+                sh 'env'
                 echo getChangeString()
             }
         }
