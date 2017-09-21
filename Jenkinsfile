@@ -39,8 +39,8 @@ pipeline {
             steps {
                 node('master') {
                     echo "PR number is: ${env.CHANGE_ID}"
+                    echo getChangeString()
                 }
-                echo getChangeString()
             }
         }
         stage("rpmbuild image build") {
