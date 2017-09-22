@@ -53,13 +53,13 @@ pipeline {
                     echo getChangeString()
                 }
                 sh 'cat config/Dockerfiles/rpmbuild/Dockerfile'
-                sh 'cat config/Dockerfiles/ostree/Dockerfile'
+                sh 'cat config/Dockerfiles/ostree-compose/Dockerfile'
             }
         }
         stage("rpmbuild image build") {
             when {
                 // Only build if we have related files in changeset
-                changeset "config/Dockerfiles/rpmbuild/**"
+                changeset "config/Dockerfiles/rpmbuild-bad/**"
             }
             steps {
                 script {
