@@ -102,14 +102,49 @@ pipeline {
                         }
             }
         }
-        stage("ostree image build") {
+        stage("ostree-compose image build") {
             when {
-                changeset "config/Dockerfiles/ostree/**"
+                // Only build if we have related files in changeset
+                changeset "config/Dockerfiles/ostree-compose/**"
             }
             steps {
                 script {
-                    echo "ostree will build!"
-                    ostreeLabel = "ostree-latest"
+                    echo "ostree-compose will build!"
+                    rpmbuildLabel = "ostree-compose-latest"
+                }
+                script {
+//                            // - build in Openshift
+//                            // - startBuild with a commit
+//                            // - Get result Build and get imagestream manifest
+//                            // - Use that to create a unique tag
+//                            // - This tag will then be passed as an image input
+//                            //   to the podTemplate/containerTemplate to create
+//                            //   our slave pod.
+
+                    openshift.verbose(true)
+                    openshift.withCluster() {
+                        openshift.withProject(openshiftProject) {
+                            def result = openshift.startBuild("ostree-compose", "-w")
+                            def out = result.out.trim()
+                            echo "Resulting Build: " + out
+
+                            def describeStr = openshift.selector(out).describe()
+                            out = describeStr.out.trim()
+
+                            def imageHash = sh(
+                                    script: "echo \"${out}\" | grep 'Image Digest:' | cut -f2- -d:",
+                                    returnStdout: true
+                            ).trim()
+                            echo "imageHash: " + imageHash
+
+                            echo "Creating CI tag for " + openshiftProject +"/ostree-compose: ostree-compose:PR-" + env.ghprbPullId
+
+                            openshift.tag(openshiftProject + "/ostree-compose@" + imageHash,
+                                    openshiftProject + "/ostree-compose:PR-" + env.ghprbPullId)
+
+                            ostreeLabel = "PR-" + env.ghprbPullId
+                        }
+                    }
                 }
             }
         }
