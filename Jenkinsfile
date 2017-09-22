@@ -53,20 +53,20 @@ pipeline {
                     echo getChangeString()
                 }
                 sh 'cat config/Dockerfiles/rpmbuild/Dockerfile'
-                sh 'cat config/Dockerfiles/ostree/Dockerfile'
+                sh 'cat config/Dockerfiles/ostree-compose/Dockerfile'
             }
         }
         stage("rpmbuild image build") {
             when {
                 // Only build if we have related files in changeset
-                changeset "config/Dockerfiles/rpmbuild/**"
+                changeset "config/Dockerfiles/rpmbuild-bad/**"
             }
             steps {
                 script {
                     echo "rpmbuild will build!"
                     rpmbuildLabel = "rpmbuild-latest"
                 }
-//                        script {
+                        script {
 //                            // - build in Openshift
 //                            // - startBuild with a commit
 //                            // - Get result Build and get imagestream manifest
@@ -74,45 +74,77 @@ pipeline {
 //                            // - This tag will then be passed as an image input
 //                            //   to the podTemplate/containerTemplate to create
 //                            //   our slave pod.
-//                            openshift.withCluster() {
-//                                openshift.withProject(openshiftProject) {
-//                                    def result = openshift.startBuild("rpmbuild",
-//                                            // wait until we upgrade to 3.6
-//                                            // for next params:
-//                                            //"--commit",
-//                                            //env.ghprbActualCommit,
-//                                            "--wait")
-//                                    def out = result.out.trim()
-//                                    echo "Resulting Build: " + out
-//
-//                                    def describeStr = openshift.selector(out).describe()
-//                                    out = describeStr.out.trim()
-//
-//                                    def imageHash = sh(
-//                                            script: "echo \"${out}\" | grep 'Image Digest:' | cut -f2- -d:",
-//                                            returnStdout: true
-//                                    ).trim()
-//                                    echo "imageHash: " + imageHash
-//
-//                                    echo "Creating CI tag for " + openshiftProject +"/rpmbuild: rpmbuild:" + env.ghprbActualCommit
-//
-//                                    openshift.tag(openshiftProject + "/rpmbuild@" + imageHash,
-//                                            openshiftProject + "/rpmbuild:" + env.ghprbActualCommit)
-//
-//                                    rpmbuildLabel = env.ghprbActualCommit
-//                                }
-//                            }
-//                        }
+
+                            openshift.verbose(true)
+                            openshift.withCluster() {
+                                openshift.withProject(openshiftProject) {
+                                    def result = openshift.startBuild("rpmbuild", "-w")
+                                    def out = result.out.trim()
+                                    echo "Resulting Build: " + out
+
+                                    def describeStr = openshift.selector(out).describe()
+                                    out = describeStr.out.trim()
+
+                                    def imageHash = sh(
+                                            script: "echo \"${out}\" | grep 'Image Digest:' | cut -f2- -d:",
+                                            returnStdout: true
+                                    ).trim()
+                                    echo "imageHash: " + imageHash
+
+                                    echo "Creating CI tag for " + openshiftProject +"/rpmbuild: rpmbuild:PR-" + env.ghprbPullId
+
+                                    openshift.tag(openshiftProject + "/rpmbuild@" + imageHash,
+                                            openshiftProject + "/rpmbuild:PR-" + env.ghprbPullId)
+
+                                    rpmbuildLabel = "PR-" + env.ghprbPullId
+                                }
+                            }
+                        }
             }
         }
-        stage("ostree image build") {
+        stage("ostree-compose image build") {
             when {
-                changeset "config/Dockerfiles/ostree/**"
+                // Only build if we have related files in changeset
+                changeset "config/Dockerfiles/ostree-compose/**"
             }
             steps {
                 script {
-                    echo "ostree will build!"
-                    ostreeLabel = "ostree-latest"
+                    echo "ostree-compose will build!"
+                    rpmbuildLabel = "ostree-compose-latest"
+                }
+                script {
+//                            // - build in Openshift
+//                            // - startBuild with a commit
+//                            // - Get result Build and get imagestream manifest
+//                            // - Use that to create a unique tag
+//                            // - This tag will then be passed as an image input
+//                            //   to the podTemplate/containerTemplate to create
+//                            //   our slave pod.
+
+                    openshift.verbose(true)
+                    openshift.withCluster() {
+                        openshift.withProject(openshiftProject) {
+                            def result = openshift.startBuild("ostree-compose", "-w")
+                            def out = result.out.trim()
+                            echo "Resulting Build: " + out
+
+                            def describeStr = openshift.selector(out).describe()
+                            out = describeStr.out.trim()
+
+                            def imageHash = sh(
+                                    script: "echo \"${out}\" | grep 'Image Digest:' | cut -f2- -d:",
+                                    returnStdout: true
+                            ).trim()
+                            echo "imageHash: " + imageHash
+
+                            echo "Creating CI tag for " + openshiftProject +"/ostree-compose: ostree-compose:PR-" + env.ghprbPullId
+
+                            openshift.tag(openshiftProject + "/ostree-compose@" + imageHash,
+                                    openshiftProject + "/ostree-compose:PR-" + env.ghprbPullId)
+
+                            ostreeLabel = "PR-" + env.ghprbPullId
+                        }
+                    }
                 }
             }
         }
