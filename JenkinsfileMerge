@@ -1,4 +1,5 @@
 node() {
   echo "merge"
+  currentBuild.result = 'SUCCESS'
   step([$class: 'GhprbPullRequestMerge', allowMergeWithoutTriggerPhrase: false, deleteOnMerge: false, disallowOwnCode: false, failOnNonMerge: false, mergeComment: 'testing the merge', onlyAdminsMerge: false])
 }
