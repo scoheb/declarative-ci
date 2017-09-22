@@ -74,16 +74,11 @@ pipeline {
 //                            // - This tag will then be passed as an image input
 //                            //   to the podTemplate/containerTemplate to create
 //                            //   our slave pod.
-                            
+
                             openshift.verbose(true)
                             openshift.withCluster() {
                                 openshift.withProject(openshiftProject) {
-                                    def result = openshift.startBuild("rpmbuild",
-                                            // wait until we upgrade to 3.6
-                                            // for next params:
-                                            //"--commit",
-                                            //env.ghprbActualCommit,
-                                            "--wait")
+                                    def result = openshift.startBuild("rpmbuild", "-w")
                                     def out = result.out.trim()
                                     echo "Resulting Build: " + out
 
