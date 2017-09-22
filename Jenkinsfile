@@ -66,7 +66,7 @@ pipeline {
                     echo "rpmbuild will build!"
                     rpmbuildLabel = "rpmbuild-latest"
                 }
-//                        script {
+                        script {
 //                            // - build in Openshift
 //                            // - startBuild with a commit
 //                            // - Get result Build and get imagestream manifest
@@ -74,35 +74,35 @@ pipeline {
 //                            // - This tag will then be passed as an image input
 //                            //   to the podTemplate/containerTemplate to create
 //                            //   our slave pod.
-//                            openshift.withCluster() {
-//                                openshift.withProject(openshiftProject) {
-//                                    def result = openshift.startBuild("rpmbuild",
-//                                            // wait until we upgrade to 3.6
-//                                            // for next params:
-//                                            //"--commit",
-//                                            //env.ghprbActualCommit,
-//                                            "--wait")
-//                                    def out = result.out.trim()
-//                                    echo "Resulting Build: " + out
-//
-//                                    def describeStr = openshift.selector(out).describe()
-//                                    out = describeStr.out.trim()
-//
-//                                    def imageHash = sh(
-//                                            script: "echo \"${out}\" | grep 'Image Digest:' | cut -f2- -d:",
-//                                            returnStdout: true
-//                                    ).trim()
-//                                    echo "imageHash: " + imageHash
-//
-//                                    echo "Creating CI tag for " + openshiftProject +"/rpmbuild: rpmbuild:" + env.ghprbActualCommit
-//
-//                                    openshift.tag(openshiftProject + "/rpmbuild@" + imageHash,
-//                                            openshiftProject + "/rpmbuild:" + env.ghprbActualCommit)
-//
-//                                    rpmbuildLabel = env.ghprbActualCommit
-//                                }
-//                            }
-//                        }
+                            openshift.withCluster() {
+                                openshift.withProject(openshiftProject) {
+                                    def result = openshift.startBuild("rpmbuild",
+                                            // wait until we upgrade to 3.6
+                                            // for next params:
+                                            //"--commit",
+                                            //env.ghprbActualCommit,
+                                            "--wait")
+                                    def out = result.out.trim()
+                                    echo "Resulting Build: " + out
+
+                                    def describeStr = openshift.selector(out).describe()
+                                    out = describeStr.out.trim()
+
+                                    def imageHash = sh(
+                                            script: "echo \"${out}\" | grep 'Image Digest:' | cut -f2- -d:",
+                                            returnStdout: true
+                                    ).trim()
+                                    echo "imageHash: " + imageHash
+
+                                    echo "Creating CI tag for " + openshiftProject +"/rpmbuild: rpmbuild:PR-" + env.ghprbPullId
+
+                                    openshift.tag(openshiftProject + "/rpmbuild@" + imageHash,
+                                            openshiftProject + "/rpmbuild:PR-" + env.ghprbPullId)
+
+                                    rpmbuildLabel = "PR-" + env.ghprbPullId
+                                }
+                            }
+                        }
             }
         }
         stage("ostree image build") {
