@@ -51,7 +51,7 @@ pipeline {
                     script {
                         echo "PR number is: ${env.ghprbPullId}"
                         //echo "PR number is: ${env.CHANGE_ID}"
-                        env.changeLogStr = getChangeString()
+                        env.changeLogStr = getChangeLogFromCurrentBuild()
                         echo env.changeLogStr
                     }
                     writeFile file: 'changelog.txt', text: env.changeLogStr
@@ -152,7 +152,7 @@ pipeline {
 }
 
 @NonCPS
-def getChangeString() {
+def getChangeLogFromCurrentBuild() {
     MAX_MSG_LEN = 100
     def changeString = ""
 
