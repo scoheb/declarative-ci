@@ -1,5 +1,8 @@
 node() {
   echo "merge"
+  // need this for ghprb plugin since it is really
+  // a post build step and it assumes the build is complete.
+  //
   currentBuild.result = 'SUCCESS'
   step([$class: 'GhprbPullRequestMerge', allowMergeWithoutTriggerPhrase: false, deleteOnMerge: false, disallowOwnCode: false, failOnNonMerge: false, mergeComment: 'testing the merge', onlyAdminsMerge: false])
 }
