@@ -34,7 +34,6 @@ pipeline {
       }
     }
     stages {
-
 //        stage("Re-Checkout") {
 //            steps {
 //                checkout([
@@ -49,8 +48,14 @@ pipeline {
         stage("Get Changelog") {
             steps {
                 node('master') {
-                    echo "PR number is: ${env.CHANGE_ID}"
-                    echo getChangeString()
+                    script {
+                        echo "PR number is: ${env.ghprbPullId}"
+                        //echo "PR number is: ${env.CHANGE_ID}"
+                        env.changeLogStr = getChangeLogFromCurrentBuild()
+                        echo env.changeLogStr
+                    }
+                    writeFile file: 'changelog.txt', text: env.changeLogStr
+                    archiveArtifacts allowEmptyArchive: true, artifacts: 'changelog.txt'
                 }
                 sh 'cat config/Dockerfiles/rpmbuild/Dockerfile'
                 sh 'cat config/Dockerfiles/ostree/Dockerfile'
@@ -147,7 +152,7 @@ pipeline {
 }
 
 @NonCPS
-def getChangeString() {
+def getChangeLogFromCurrentBuild() {
     MAX_MSG_LEN = 100
     def changeString = ""
 
@@ -162,7 +167,7 @@ def getChangeString() {
 	    def files = new ArrayList(entry.affectedFiles)
             for (int k = 0; k < files.size(); k++) {
               def file = files[k]
-              changeString += " x ${file.path}\n"
+              changeString += "    | (${file.editType.name})  ${file.path}\n"
             }
         }
     }
