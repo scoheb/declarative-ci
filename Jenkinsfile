@@ -74,6 +74,8 @@ pipeline {
 //                            // - This tag will then be passed as an image input
 //                            //   to the podTemplate/containerTemplate to create
 //                            //   our slave pod.
+                            
+                            openshift.verbose(true)
                             openshift.withCluster() {
                                 openshift.withProject(openshiftProject) {
                                     def result = openshift.startBuild("rpmbuild",
